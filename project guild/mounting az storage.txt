@@ -16,4 +16,16 @@ Step4: add new Access Control for data storage
 	> Add new
 	> Select role Storage Blob Data Contributor
 	> Select Members - databricks-service-app
-	
+
+Step5: Create mounting notebook (mount_adls_storage)
+
+Step6: Create Azure key-vault
+	> Add secret to key-vault 
+	> Generate secrets (3 of them)
+
+Step7: create databricks secret scope
+	> link to key-vault
+	> home url + secrets/createScope
+	> get DNS(vault URI) and resource ID from vault's property
+
+Step8: make change for mount_adls_storage
