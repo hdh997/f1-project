@@ -1,0 +1,19 @@
+Step1: create storage account
+	+ Select LRS
+	+ Enable data lake storage gen2
+
+Step2: create 2 blob containers (raw and processed) 
+
+Step3: create Az service principal
+	> Azure AD
+	> App registrations
+		+ New resgistration
+	> copy & save application ID and directory ID in a file
+	> Create a secret then note the value
+
+Step4: add new Access Control for data storage
+	> IAM 
+	> Add new
+	> Select role Storage Blob Data Contributor
+	> Select Members - databricks-service-app
+	
