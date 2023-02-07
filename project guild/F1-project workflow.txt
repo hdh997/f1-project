@@ -1,7 +1,10 @@
 - Upload raw data to data storage
 
 - Ingest raw data to ADLS ingested layer (parquet format)
-
+  + read data
+  + transform data 
+  + write data
+  
 - Tansform data then store in ADLS presentation layer
 
 - Analyze with databricks
