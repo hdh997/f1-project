@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_funcs"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1 - Read the JSON file using the spark dataframe reader API
 
@@ -37,7 +45,7 @@ drivers_schema = StructType(fields=[StructField("driverId", StringType(), False)
 
 # COMMAND ----------
 
-drivers_df = spark.read.schema(drivers_schema).json('/mnt/myformula1projectdl/raw/drivers.json')
+drivers_df = spark.read.schema(drivers_schema).json(f'{raw_folder_path}/drivers.json')
 
 # COMMAND ----------
 
@@ -50,14 +58,17 @@ display(drivers_df)
 
 # COMMAND ----------
 
-from pyspark.sql.functions import col, concat, current_timestamp, lit
+from pyspark.sql.functions import col, concat, lit
 
 # COMMAND ----------
 
 drivers_with_column_df = drivers_df.withColumnRenamed('driverId', 'driver_id')\
                                     .withColumnRenamed('driverRef', 'driver_ref')\
-                                    .withColumn('ingestion_date', current_timestamp())\
                                     .withColumn('name', concat(col('name.forename'), lit(' '), col('name.surname')))
+
+# COMMAND ----------
+
+drivers_with_column_df = add_ingestion_date(drivers_with_column_df)
 
 # COMMAND ----------
 
@@ -79,4 +90,8 @@ display(drivers_final_df)
 
 # COMMAND ----------
 
-drivers_final_df.write.mode('overwrite').parquet('/mnt/myformula1projectdl/processed/drivers')
+drivers_final_df.write.mode('overwrite').parquet(f'{processed_folder_path}/drivers')
+
+# COMMAND ----------
+
+display(spark.read.parquet(f'{processed_folder_path}/drivers'))

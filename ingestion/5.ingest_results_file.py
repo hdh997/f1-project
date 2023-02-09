@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_funcs"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step1 - Read JSON file using spark dataframe reader
 
@@ -19,7 +27,7 @@ results_schema = 'resultId INT, raceId INT, driverId INT, constructorId INT, num
 
 # COMMAND ----------
 
-results_df = spark.read.schema(results_schema).json('/mnt/myformula1projectdl/raw/results.json')
+results_df = spark.read.schema(results_schema).json(f'{raw_folder_path}/results.json')
 
 # COMMAND ----------
 
@@ -36,10 +44,6 @@ display(results_df)
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
-
-# COMMAND ----------
-
 results_renamed_df = results_df.withColumnRenamed("resultId", "result_id")\
 .withColumnRenamed('raceId', 'race_id')\
 .withColumnRenamed('driverId', 'driver_id')\
@@ -48,8 +52,11 @@ results_renamed_df = results_df.withColumnRenamed("resultId", "result_id")\
 .withColumnRenamed('positionOrder', 'position_order')\
 .withColumnRenamed('fastestLap', 'fastest_lap')\
 .withColumnRenamed('fastestLapTime', 'fastest_lap_time')\
-.withColumnRenamed('fastestLapSpeed', 'fastest_lap_speed')\
-.withColumn('ingestion_date', current_timestamp())
+.withColumnRenamed('fastestLapSpeed', 'fastest_lap_speed')
+
+# COMMAND ----------
+
+results_renamed_df = add_ingestion_date(results_renamed_df)
 
 # COMMAND ----------
 
@@ -75,4 +82,4 @@ display(results_final_df)
 
 # COMMAND ----------
 
-results_final_df.write.mode('overwrite').partitionBy('race_id').parquet('mnt/myformula1projectdl/processed/results')
+results_final_df.write.mode('overwrite').partitionBy('race_id').parquet(f'{processed_folder_path}/results')

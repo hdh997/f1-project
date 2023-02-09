@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_funcs"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC 
 # MAGIC ####Step1 - Read the JSON file using the spark dataframe reader
@@ -19,7 +27,7 @@ constructors_schema = "constructorId INT, constructorRef STRING, name STRING, na
 
 # COMMAND ----------
 
-constructors_df = spark.read.schema(constructors_schema).json("/mnt/myformula1projectdl/raw/constructors.json")
+constructors_df = spark.read.schema(constructors_schema).json(f"{raw_folder_path}/constructors.json")
 
 # COMMAND ----------
 
@@ -32,7 +40,7 @@ display(constructors_df)
 
 # COMMAND ----------
 
-constructors_dropped_df = constructors_df.drop(constructor_df.url)
+constructors_dropped_df = constructors_df.drop(constructors_df.url)
 
 # COMMAND ----------
 
@@ -45,17 +53,16 @@ display(constructors_dropped_df)
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
-
-# COMMAND ----------
-
 constructors_final_df = constructors_dropped_df.withColumnRenamed('constructorId', 'constructor_id')\
-.withColumnRenamed('constructorRef', 'constructor_ref')\
-.withColumn('ingestion_date', current_timestamp())
+.withColumnRenamed('constructorRef', 'constructor_ref')
 
 # COMMAND ----------
 
-display(constructor_final_df)
+constructors_final_df = add_ingestion_date(constructors_final_df)
+
+# COMMAND ----------
+
+display(constructors_final_df)
 
 # COMMAND ----------
 
@@ -65,4 +72,4 @@ display(constructor_final_df)
 
 # COMMAND ----------
 
-constructors_final_df.write.mode('overwrite').parquet("/mnt/myformula1projectdl/processed/constructors")
+constructors_final_df.write.mode('overwrite').parquet(f"{processed_folder_path}/constructors")

@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_funcs"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC 
 # MAGIC #### Step1 - read csv file to dataframe
@@ -32,7 +40,7 @@ races_schema = StructType(fields=[
 
 # COMMAND ----------
 
-races_df = spark.read.option("header", True).schema(races_schema).csv("/mnt/myformula1projectdl/raw/races.csv")
+races_df = spark.read.option("header", True).schema(races_schema).csv(f"{raw_folder_path}/races.csv")
 
 # COMMAND ----------
 
@@ -62,8 +70,11 @@ display(races_rename_select_df)
 
 # COMMAND ----------
 
-races_semi_df = races_rename_select_df.withColumn("race_timestamp", to_timestamp(concat(col('date'), lit(' '), col('time')), 'yyyy-MM-dd HH:mm:ss'))\
-.withColumn("ingestion_date", current_timestamp())
+races_semi_df = races_rename_select_df.withColumn("race_timestamp", to_timestamp(concat(col('date'), lit(' '), col('time')), 'yyyy-MM-dd HH:mm:ss'))
+
+# COMMAND ----------
+
+races_semi_df = add_ingestion_date(races_semi_df)
 
 # COMMAND ----------
 
@@ -89,7 +100,7 @@ display(races_final_df)
 
 # COMMAND ----------
 
-races_final_df.write.mode("overwrite").partitionBy("race_year").parquet("/mnt/myformula1projectdl/processed/races")
+races_final_df.write.mode("overwrite").partitionBy("race_year").parquet(f"{processed_folder_path}/races")
 
 # COMMAND ----------
 

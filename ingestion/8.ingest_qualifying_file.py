@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_funcs"
+
+# COMMAND ----------
+
 # MAGIC %md 
 # MAGIC #### Step1 - Read the folder using the spark dataframe reader 
 
@@ -31,7 +39,7 @@ qualifying_schema = StructType(fields=[StructField('qualifyId', IntegerType(), F
 
 # COMMAND ----------
 
-qualifying_df = spark.read.schema(qualifying_schema).option('multiLine', True).json("/mnt/myformula1projectdl/raw/qualifying/")
+qualifying_df = spark.read.schema(qualifying_schema).option('multiLine', True).json(f"{raw_folder_path}/qualifying/")
 
 # COMMAND ----------
 
@@ -44,15 +52,14 @@ display(qualifying_df)
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
-
-# COMMAND ----------
-
 final_df = qualifying_df.withColumnRenamed('qualifyId', 'qualify_id')\
                         .withColumnRenamed('raceId', 'race_id')\
                         .withColumnRenamed('driverId', 'driver_id')\
-                        .withColumnRenamed('constructorId', 'constructor_id')\
-                        .withColumn('ingestion_date', current_timestamp())
+                        .withColumnRenamed('constructorId', 'constructor_id')
+
+# COMMAND ----------
+
+final_df = add_ingestion_date(final_df)
 
 # COMMAND ----------
 
@@ -61,4 +68,8 @@ final_df = qualifying_df.withColumnRenamed('qualifyId', 'qualify_id')\
 
 # COMMAND ----------
 
-final_df.write.mode('overwrite').parquet("/mnt/myformula1projectdl/processed/qualifying")
+final_df.write.mode('overwrite').parquet(f"{processed_folder_path}/qualifying")
+
+# COMMAND ----------
+
+display(spark.read.parquet(f"{processed_folder_path}/qualifying"))

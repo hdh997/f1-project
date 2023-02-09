@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_funcs"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step1 - Read CSV file using spark df reader
 
@@ -37,7 +45,7 @@ circuits_schema = StructType(fields=[StructField('circuitId',IntegerType(), Fals
 
 circuits_df = spark.read.option("header", True)\
 .schema(circuits_schema)\
-.csv("dbfs:/mnt/myformula1projectdl/raw/circuits.csv")
+.csv(f"{raw_folder_path}/circuits.csv")
 
 # COMMAND ----------
 
@@ -58,7 +66,7 @@ circuits_df.describe().show()
 
 # COMMAND ----------
 
-from pyspark.sql.functions import col, current_timestamp
+from pyspark.sql.functions import col
 
 # COMMAND ----------
 
@@ -98,7 +106,7 @@ display(circuits_renamed_df)
 
 # COMMAND ----------
 
-circuits_final_df = circuits_renamed_df.withColumn("ingestion_date", current_timestamp())
+circuits_final_df = add_ingestion_date(circuits_renamed_df)
 
 # COMMAND ----------
 
@@ -112,4 +120,4 @@ display(circuits_final_df)
 
 # COMMAND ----------
 
-circuits_final_df.write.mode("overwrite").parquet("/mnt/myformula1projectdl/processed/circuits")
+circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
