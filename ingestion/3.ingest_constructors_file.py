@@ -19,11 +19,11 @@ constructors_schema = "constructorId INT, constructorRef STRING, name STRING, na
 
 # COMMAND ----------
 
-constructor_df = spark.read.schema(constructors_schema).json("/mnt/myformula1projectdl/raw/constructors.json")
+constructors_df = spark.read.schema(constructors_schema).json("/mnt/myformula1projectdl/raw/constructors.json")
 
 # COMMAND ----------
 
-display(constructor_df)
+display(constructors_df)
 
 # COMMAND ----------
 
@@ -32,11 +32,11 @@ display(constructor_df)
 
 # COMMAND ----------
 
-constructor_dropped_df = constructor_df.drop(constructor_df.url)
+constructors_dropped_df = constructors_df.drop(constructor_df.url)
 
 # COMMAND ----------
 
-display(constructor_dropped_df)
+display(constructors_dropped_df)
 
 # COMMAND ----------
 
@@ -49,7 +49,7 @@ from pyspark.sql.functions import current_timestamp
 
 # COMMAND ----------
 
-constructor_final_df = constructor_dropped_df.withColumnRenamed('constructorId', 'constructor_id')\
+constructors_final_df = constructors_dropped_df.withColumnRenamed('constructorId', 'constructor_id')\
 .withColumnRenamed('constructorRef', 'constructor_ref')\
 .withColumn('ingestion_date', current_timestamp())
 
@@ -65,4 +65,4 @@ display(constructor_final_df)
 
 # COMMAND ----------
 
-constructor_final_df.write.mode('overwrite').parquet("/mnt/myformula1projectdl/processed/constructor")
+constructors_final_df.write.mode('overwrite').parquet("/mnt/myformula1projectdl/processed/constructors")
