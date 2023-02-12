@@ -12,6 +12,14 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_data_source","")
+
+# COMMAND ----------
+
+v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step1 - Read JSON file using spark dataframe reader
 
@@ -44,6 +52,10 @@ display(results_df)
 
 # COMMAND ----------
 
+from pyspark.sql.functions import lit
+
+# COMMAND ----------
+
 results_renamed_df = results_df.withColumnRenamed("resultId", "result_id")\
 .withColumnRenamed('raceId', 'race_id')\
 .withColumnRenamed('driverId', 'driver_id')\
@@ -52,7 +64,8 @@ results_renamed_df = results_df.withColumnRenamed("resultId", "result_id")\
 .withColumnRenamed('positionOrder', 'position_order')\
 .withColumnRenamed('fastestLap', 'fastest_lap')\
 .withColumnRenamed('fastestLapTime', 'fastest_lap_time')\
-.withColumnRenamed('fastestLapSpeed', 'fastest_lap_speed')
+.withColumnRenamed('fastestLapSpeed', 'fastest_lap_speed')\
+.withColumn("data_source", lit(v_data_source))
 
 # COMMAND ----------
 
@@ -83,3 +96,7 @@ display(results_final_df)
 # COMMAND ----------
 
 results_final_df.write.mode('overwrite').partitionBy('race_id').parquet(f'{processed_folder_path}/results')
+
+# COMMAND ----------
+
+dbutils.notebook.exit("Done!")

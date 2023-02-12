@@ -12,6 +12,14 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_data_source", "")
+
+# COMMAND ----------
+
+v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC 
 # MAGIC #### Step1 - read csv file to dataframe
@@ -70,7 +78,8 @@ display(races_rename_select_df)
 
 # COMMAND ----------
 
-races_semi_df = races_rename_select_df.withColumn("race_timestamp", to_timestamp(concat(col('date'), lit(' '), col('time')), 'yyyy-MM-dd HH:mm:ss'))
+races_semi_df = races_rename_select_df.withColumn("race_timestamp", to_timestamp(concat(col('date'), lit(' '), col('time')), 'yyyy-MM-dd HH:mm:ss'))\
+.withColumn("data_source", lit(v_data_source))
 
 # COMMAND ----------
 
@@ -107,3 +116,7 @@ races_final_df.write.mode("overwrite").partitionBy("race_year").parquet(f"{proce
 # MAGIC %fs
 # MAGIC 
 # MAGIC ls /mnt/myformula1projectdl/processed
+
+# COMMAND ----------
+
+dbutils.notebook.exit("Done!")

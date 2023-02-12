@@ -12,6 +12,14 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_data_source", "")
+
+# COMMAND ----------
+
+v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step1 - Read CSV file using spark df reader
 
@@ -89,11 +97,16 @@ display(circuits_selected_df)
 
 # COMMAND ----------
 
+from pyspark.sql.functions import lit
+
+# COMMAND ----------
+
 circuits_renamed_df = circuits_selected_df.withColumnRenamed("circuitId", "circuit_id")\
 .withColumnRenamed("circuitRef", "circuit_ref")\
 .withColumnRenamed("lat", "lattitude")\
 .withColumnRenamed("lng", "longtitude")\
-.withColumnRenamed("alt", "altitude")
+.withColumnRenamed("alt", "altitude")\
+.withColumn("data_source", lit(v_data_source))
 
 # COMMAND ----------
 
@@ -121,3 +134,7 @@ display(circuits_final_df)
 # COMMAND ----------
 
 circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
+
+# COMMAND ----------
+
+dbutils.notebook.exit("Done!")
