@@ -38,11 +38,19 @@ mount_adls("processed")
 
 # COMMAND ----------
 
+mount_adls("performance")
+
+# COMMAND ----------
+
 dbutils.fs.ls("/mnt/myformula1projectdl/processed")
 
 # COMMAND ----------
 
 dbutils.fs.ls("/mnt/myformula1projectdl/raw")
+
+# COMMAND ----------
+
+dbutils.fs.ls("/mnt/myformula1projectdl/performance")
 
 # COMMAND ----------
 
