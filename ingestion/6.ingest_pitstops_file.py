@@ -77,7 +77,7 @@ final_df = add_ingestion_date(final_df)
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/pit_stops")
+final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.pit_stops")
 
 # COMMAND ----------
 
