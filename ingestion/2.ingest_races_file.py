@@ -13,10 +13,12 @@
 # COMMAND ----------
 
 dbutils.widgets.text("p_data_source", "")
+v_data_source = dbutils.widgets.get("p_data_source")
 
 # COMMAND ----------
 
-v_data_source = dbutils.widgets.get("p_data_source")
+dbutils.widgets.text("p_file_date", "2021-03-21")
+v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
 
@@ -48,7 +50,7 @@ races_schema = StructType(fields=[
 
 # COMMAND ----------
 
-races_df = spark.read.option("header", True).schema(races_schema).csv(f"{raw_folder_path}/races.csv")
+races_df = spark.read.option("header", True).schema(races_schema).csv(f"{raw_folder_path}/{v_file_date}/races.csv")
 
 # COMMAND ----------
 
@@ -79,7 +81,8 @@ display(races_rename_select_df)
 # COMMAND ----------
 
 races_semi_df = races_rename_select_df.withColumn("race_timestamp", to_timestamp(concat(col('date'), lit(' '), col('time')), 'yyyy-MM-dd HH:mm:ss'))\
-.withColumn("data_source", lit(v_data_source))
+.withColumn("data_source", lit(v_data_source))\
+.withColumn("file_date", lit(v_file_date))
 
 # COMMAND ----------
 
@@ -110,6 +113,11 @@ display(races_final_df)
 # COMMAND ----------
 
 races_final_df.write.mode("overwrite").partitionBy("race_year").format("parquet").saveAsTable("f1_processed.races")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.races
 
 # COMMAND ----------
 

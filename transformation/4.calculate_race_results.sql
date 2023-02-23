@@ -3,6 +3,9 @@ USE f1_processed;
 
 -- COMMAND ----------
 
+CREATE TABLE f1_performance.calculated_race_results
+USING parquet
+AS
 SELECT races.race_year,
       constructors.name AS team_name,
       drivers.name AS driver_name,
@@ -17,4 +20,4 @@ WHERE results.position <= 10
 
 -- COMMAND ----------
 
-
+SELECT * FROM f1_performance.calculated_race_results;
