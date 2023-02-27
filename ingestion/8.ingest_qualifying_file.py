@@ -88,7 +88,13 @@ final_df = add_ingestion_date(final_df)
 
 # COMMAND ----------
 
-overwrite_partition(final_df,'f1_processed', 'qualifying', 'race_id')
+# overwrite_partition(final_df,'f1_processed', 'qualifying', 'race_id')
+
+# COMMAND ----------
+
+merge_cond = 'tgt.qualify_id = src.qualify_id tgt.race_id = src.race_id'
+
+merge_delta_data(final_df, 'f1_processed', 'qualifying', processed_folder_path, merge_cond, 'race_id')
 
 # COMMAND ----------
 

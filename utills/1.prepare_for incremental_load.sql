@@ -22,4 +22,8 @@ LOCATION "/mnt/myformula1projectdl/performance"
 
 -- COMMAND ----------
 
+DROP TABLE IF EXISTS f1_processed.constructors
+
+-- COMMAND ----------
+
 

@@ -153,7 +153,7 @@ display(results_final_df)
 
 # COMMAND ----------
 
-overwrite_partition(results_final_df,'f1_processed', 'results', 'race_id')
+# overwrite_partition(results_final_df,'f1_processed', 'results', 'race_id')
 
 # COMMAND ----------
 
@@ -171,6 +171,17 @@ overwrite_partition(results_final_df,'f1_processed', 'results', 'race_id')
 #     results_final_df.write.mode("overwrite").insertInto("f1_processed.results")
 # else:
 #     results_final_df.write.mode('overwrite').partitionBy('race_id').format("parquet").saveAsTable("f1_processed.results")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC With Delta
+
+# COMMAND ----------
+
+merge_cond = 'tgt.result_id = src.result_id AND tgt.race_id = src.race_id'
+
+merge_delta_data(results_final_df, 'f1_processed', 'results', processed_folder_path, merge_cond, 'race_id')
 
 # COMMAND ----------
 
