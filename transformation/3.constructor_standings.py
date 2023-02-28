@@ -22,7 +22,7 @@ v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
 
-race_results_ls = spark.read.parquet(f"{performance_folder_path}/race_results")\
+race_results_ls = spark.read.format('delta').load(f"{performance_folder_path}/race_results")\
 .filter(f"file_date = '{v_file_date}'")
 
 # COMMAND ----------
@@ -33,7 +33,7 @@ race_year_list = df_col_to_ls(race_results_ls, 'race_year')
 
 from pyspark.sql.functions import col
 
-race_results_df = spark.read.parquet(f"{performance_folder_path}/race_results")\
+race_results_df = spark.read.format('delta').load(f"{performance_folder_path}/race_results")\
 .filter(col("race_year").isin(race_year_list))
 
 # COMMAND ----------
@@ -51,7 +51,7 @@ team_standings = race_results_df.groupBy("race_year", "team")\
 
 # COMMAND ----------
 
-display(team_standings.filter("race_year = 2019"))
+display(team_standings.filter("race_year = 2020"))
 
 # COMMAND ----------
 
@@ -71,10 +71,20 @@ display(final_df.filter("race_year = 2020"))
 
 # final_df.write.mode("overwrite").format("parquet").saveAsTable('f1_performance.team_standings')
 
-overwrite_partition(final_df,'f1_performance', 'team_standings', 'race_year')
+#overwrite_partition(final_df,'f1_performance', 'team_standings', 'race_year')
+
+# COMMAND ----------
+
+merge_cond = 'tgt.team = src.team AND tgt.race_year = src.race_year'
+
+merge_delta_data(final_df, 'f1_performance', 'team_standings', performance_folder_path, merge_cond, 'race_year')
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC 
-# MAGIC SELECT * FROM f1_performance.team_standings
+# MAGIC SELECT COUNT(*) FROM f1_performance.team_standings
+
+# COMMAND ----------
+
+

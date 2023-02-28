@@ -36,7 +36,7 @@ def overwrite_partition(input_df, db_name, table_name, partition_col):
 # COMMAND ----------
 
 def df_col_to_ls(input_df, col_name):
-    df_row_ls = input_df.filter(col_name)\
+    df_row_ls = input_df.select(col_name)\
                 .distinct()\
                 .collect()
     col_values_ls = [row[col_name] for row in df_row_ls]

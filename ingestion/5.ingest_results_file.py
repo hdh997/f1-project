@@ -123,6 +123,15 @@ display(results_final_df)
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC #### Deduplicate
+
+# COMMAND ----------
+
+results_deduped_df = results_final_df.dropDuplicates(['race_id', 'driver_id'])
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC #### Step4 - Write output as parquet file and partition by race ID
 
 # COMMAND ----------
@@ -181,7 +190,7 @@ display(results_final_df)
 
 merge_cond = 'tgt.result_id = src.result_id AND tgt.race_id = src.race_id'
 
-merge_delta_data(results_final_df, 'f1_processed', 'results', processed_folder_path, merge_cond, 'race_id')
+merge_delta_data(results_deduped_df, 'f1_processed', 'results', processed_folder_path, merge_cond, 'race_id')
 
 # COMMAND ----------
 
